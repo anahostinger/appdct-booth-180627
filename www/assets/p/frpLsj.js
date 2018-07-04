@@ -26,7 +26,7 @@ return '<div id="the-sub-content-app"> '+
 '            <div class="col padding-8 center nav-btn" onclick="close_menu_s2()"> '+
 '                <div class="rips circle" style="padding:5px 0px"> <i class="la la-arrow-left la-fw xlarge"></i></div> '+
 '            </div> '+
-'            <div class="col right padding-8 center save-btn nav-btn" onclick="save_penj_upd()"> '+
+'            <div class="col right padding-8 center save-btn nav-btn" onclick="save_penj_upd(this)"> '+
 '                <div class="rips circle" style="padding:5px 0px"> <i class="la la-check la-fw xlarge"></i></div> '+
 '            </div> '+
 '            <div class="rest padding-8 row large"><div style="padding-top:5px"> Edit Penjualan</div></div> '+
@@ -235,7 +235,10 @@ function sesuaikan_harga_upd(ths){
     $total.val("Rp."+inRp(parseInt(getNominal($total.val()))-harga_lama+harga_qty));
 }
 function getNominal(rupiah){ return rupiah.substr(3, rupiah.length).split(".").join("");}
-function save_penj_upd(){
+function save_penj_upd(ths){
+    ths = $(ths);
+    if(ths.attr("in-action") !== undefined) return false;
+ 
     var items = $(".data-item"), len = items.length, fd = new FormData(), inp, $harga, _harga, fail = false, tp_items;
     if($("#total-harga").val() == "Rp.0"){
         alert("Silahkan tambahkan produk yang dipesan");
@@ -255,8 +258,11 @@ function save_penj_upd(){
         if(isNaN(_harga) || _harga < 1){$harga.val("").focus(); alert("Silahkan isi harga produk ini"); fail = true; break;}
         fd.append("harga[]", _harga);
     }
-    if(!fail) getXForm(fd, function(res){
-        if(res.status == "success"){ambil_data_penjualan($(".date_val").val());alert("Data berhasil disimpan");close_menu_s2();}
-        else alert("Terjadi kesalahan sistem");
-    });
+    if(!fail){
+        ths.attr("in-action", "true");
+        getXForm(fd, function(res){
+            if(res.status == "success"){ambil_data_penjualan($(".date_val").val());alert("Data berhasil disimpan");close_menu_s2();}
+            else alert("Terjadi kesalahan sistem"); ths.removeAttr("in-action");
+        });
+    }
 }

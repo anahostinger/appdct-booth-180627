@@ -4,7 +4,7 @@ return '<div class="card-2 nav theme"> '+
 '        <div class="col padding-8 center nav-btn"> '+
 '            <div class="rips circle close-btn" style="padding:5px 0px"> <i class="la la-arrow-left la-fw xlarge"></i></div> '+
 '        </div> '+
-'        <div class="col padding-8 center right nav-btn save-btn" onclick="simpan_pengeluaran()"> '+
+'        <div class="col padding-8 center right nav-btn save-btn" onclick="simpan_pengeluaran(this)"> '+
 '            <div class="rips circle" style="padding:5px 0px"> <i class="la la-check la-fw xlarge"></i></div> '+
 '        </div> '+
 '        <div class="rest padding-8 row large"><div style="padding-top:5px"> Tambah Pengeluaran</div></div> '+
@@ -72,7 +72,10 @@ function hapus_item(ths){
     if(confirm("Hapus item ini?"))
         $(ths).parent().parent().remove();
 }
-function simpan_pengeluaran(){
+function simpan_pengeluaran(ths){
+    ths = $(ths);
+    if(ths.attr("in-action") !== undefined) return false;
+    
     var inp = $("#pengeluaran-list input"), l = inp.length;
     if(l){
         var fd = new FormData(), nama, biaya, $nama, $biaya, send = true, ada = false;
@@ -103,15 +106,17 @@ function simpan_pengeluaran(){
                 ada = true;
             }
         }
-        if(send && ada)
+        if(send && ada){
+            ths.attr("in-action", "true");
             getXForm(fd, function(res){
                 if(res.status == "success"){
                     alert("Data pengeluaran berhasil disimpan");
                     close_menu_s();
                 }else
                     alert("Terjadi kesalahan sistem \nSilahkan coba beberapa saat lagi");
+                ths.removeAttr("in-action");
             });
-        else if(send && !ada){
+        }else if(send && !ada){
             inp.eq(0).focus();
             alert("Silahkan lengkapi data item");
         }

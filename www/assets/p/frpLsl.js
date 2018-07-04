@@ -79,15 +79,18 @@ function u_peng(ths){ var spans = $(ths).find(".detail-data"); $("#iu_id").val(s
 function d_peng(ths, id){ if(confirm("Yakin hapus data ini?")){ getX({m:"pengelola-pengeluaran-del", id:id},function(res){
     if(res.status=="success"){ alert("Berhasil terhapus"); $(ths).parent().parent().remove();}else alert("Terjadi kesalahan sistem");
 });}}
-function save_peng_upd(){
+function save_peng_upd(ths){
+    ths = $(ths);
+    if(ths.attr("in-action") !== undefined) return false;
+    
     var id = $("#iu_id").val(), $nama = $("#iu_nama"), $harga = $("#iu_harga"), $is_op1 = $("#iu_is1").is(":checked"), 
         fd = new FormData(), nama = $nama.val().trim(), harga = $harga.val().trim();
     if(nama == ""){$nama.focus();alert("Silahkan lengkapi nama item");}
     else if(harga == ""){$harga.focus();alert("Silahkan lengkapi biaya item");}
-    else{ var is_op = $is_op1 ? '1':'0';
+    else{ var is_op = $is_op1 ? '1':'0'; ths.attr("in-action", "true");
         getX({m:"pengelola-pengeluaran-edit",id:id,nama:nama,harga:harga,is_operasional:is_op}, function(res){
             if(res.status == "success"){ambil_data_pengeluaran($(".date_val").val());alert("Data berhasil disimpan");close_menu_s2();}
-            else alert("Terjadi kesalahan sistem");
+            else alert("Terjadi kesalahan sistem"); ths.removeAttr("in-action");
         });
     }
 }
@@ -97,7 +100,7 @@ return '<div class="card blue nav"> '+
 '        <div class="col padding-8 center nav-btn" onclick="close_menu_s2()"> '+
 '            <div class="rips circle" style="padding:5px 0px"> <i class="la la-arrow-left la-fw xlarge"></i></div> '+
 '        </div> '+
-'        <div class="col right padding-8 center save-btn nav-btn" onclick="save_peng_upd()"> '+
+'        <div class="col right padding-8 center save-btn nav-btn" onclick="save_peng_upd(this)"> '+
 '            <div class="rips circle" style="padding:5px 0px"> <i class="la la-check la-fw xlarge"></i></div> '+
 '        </div> '+
 '        <div class="rest padding-8 row large"><div style="padding-top:5px"> Edit Pengeluaran</div></div> '+

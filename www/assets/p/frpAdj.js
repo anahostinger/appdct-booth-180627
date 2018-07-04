@@ -4,7 +4,7 @@ return '<div class="card-2 nav theme"> '+
 '        <div class="col padding-8 center nav-btn"> '+
 '            <div class="rips circle close-btn" style="padding:5px 0px"> <i class="la la-arrow-left la-fw xlarge"></i></div> '+
 '        </div> '+
-'        <div class="col padding-8 center right nav-btn save-btn" onclick="simpan_pesanan()"> '+
+'        <div class="col padding-8 center right nav-btn save-btn" onclick="simpan_pesanan(this)"> '+
 '            <div class="rips circle" style="padding:5px 0px"> <i class="la la-check la-fw xlarge"></i></div> '+
 '        </div> '+
 '        <div class="rest padding-8 row large"><div style="padding-top:5px"> Tambah Penjualan</div></div> '+
@@ -288,7 +288,10 @@ function edit_produk(id, produk, ths){
     var urutan = cari_urutan_produk(id, 0);
     produk_selected[urutan]["nama"] = produk;
 }
-function simpan_pesanan(){
+function simpan_pesanan(ths){
+    ths = $(ths);
+    if(ths.attr("in-action") !== undefined) return false;
+    
     var local = produk_selected, l = local.length, harga_kosong = false, keranjang_kosong = true;
     if(l){
         var fd = new FormData();
@@ -322,13 +325,17 @@ function simpan_pesanan(){
             alert("Silahkan isi harga "+nama_produk_kosong);
             $(harga_kosong).val("").focus()
         }else
+        }else{
+            ths.attr("in-action", "true");
             getXForm(fd, function(res){ 
                 if(res.status == "success"){
                     alert("Data pesanan berhasil disimpan");
                     close_menu_s();
                 }else
                     alert("Terjadi kesalahan sistem \nSilahkan coba beberapa saat lagi");
+                ths.removeAttr("in-action");
             });
+        }
     }else{
         alert("Pesanan masih kosong");
     }
